@@ -1,0 +1,14 @@
+{
+	hostname: "LabNet Server",
+	fritzbox: {
+		address = '192.168.1.1',
+		port = 49000
+	}
+	influx: {
+		host: "localhost",
+		port: 8086,
+		db   = "LabNet",
+		user: "labnet-server",
+		pw: "labnet123"
+	}
+}
