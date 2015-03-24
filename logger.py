@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-from influxdb import InfluxDBClient
+#from influxdb import InfluxDBClient
+from influxdb.influxdb08 import InfluxDBClient
 import psutil
 import time
 import fritzconnection as fc
@@ -15,6 +16,18 @@ db = InfluxDBClient(config['influx']['host'],
 		    config['influx']['db'])
 fbstatus = fc.FritzStatus(address=config['fritzbox']['address'], port=config['fritzbox']['port'])
 hostname = config['hostname']
+
+def log_disk():
+	partitions = psutil.disk_partitions()
+	for p in partitions:
+		disk = psutil.disk_usage(p.mountpoint)
+		db_influx.write_points([{
+			"name": "disk_usage",
+			"columns": ["mount","used", "free", "percent", "host"],
+			"points": [
+				[p.mountpoint, disk.used, disk.free, disk.percent , hostname]
+			]
+		}])
 
 def log_cpu():
 	db.write_points([{
@@ -49,5 +62,6 @@ while True:
 	log_cpu()
 	log_mem()
 	log_uplink()
+	log_disk()
 	time.sleep(1)
 
